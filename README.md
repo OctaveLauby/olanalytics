@@ -13,11 +13,12 @@ The module ***olanalytics*** provide common analytics operations such as:
 
 ## Installation
 
-One can install olutils using pip install command:
 
-    ```bash
-    pip install olanalytics
-    ```
+```
+git clone https://github.com/OctaveLauby/olanalytics.git
+cd olanalytics
+```
+
 
 ## Usage
 
