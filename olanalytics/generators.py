@@ -56,8 +56,8 @@ class CustomCurve:
     def iterpoints(self):
         return zip(self.X, self.Y)
 
-    def plot(self):
-        plt.plot(self.X, self.Y)
+    def plot(self, *args, **kwargs):
+        plt.plot(self.X, self.Y, *args, **kwargs)
 
     def __len__(self):
         return len(self.X)
