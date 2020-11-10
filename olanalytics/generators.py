@@ -50,7 +50,8 @@ class CustomCurve:
         center is based on numerical X
         """
         assert stdev > 0
-        self.Y += high * np.exp(-(self.Xnum - center) ** 2 / 2 * (stdev ** 2))
+        print(stdev)
+        self.Y += high * np.exp(-0.5 * (self.Xnum-center)**2 / stdev**2)
 
     def iterpoints(self):
         return zip(self.X, self.Y)
