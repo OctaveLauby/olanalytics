@@ -102,9 +102,10 @@ class CustomTimedCurve(CustomCurve):
             if self.X[index] != center:
                 raise NotImplementedError("center not in time line")
             indexes = [index]
-        elif isinstance(center, dict):
-            dt_descr = DatetimeDescription(**center)
-            indexes = dt_descr.match_indexes(self.X)
+        elif isinstance(center, (DatetimeDescription, dict)):
+            if isinstance(center, dict):
+                center = DatetimeDescription(**center)
+            indexes = center.match_indexes(self.X)
         elif isinstance(center, (float, int)):
             indexes = [center]
         else:
