@@ -1,9 +1,8 @@
-import bisect
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timedelta
 
-from olanalytics.dt import DatetimeDescription
+from olanalytics.dt import dtloc2pos
 
 
 
@@ -36,12 +35,13 @@ class CustomCurve:
         """Numerical X vector"""
         return self._Xnum
 
-    def add_noise(self, low, high):
+    def add_noise(self, low, high, loc=None):
         """Add uniform noise to Y"""
-        self.Y += np.random.uniform(
+        Y = self.Y[loc] if loc else self.Y
+        Y += np.random.uniform(
             low=low,
             high=high,
-            size=len(self),
+            size=len(Y),
         )
 
     def add_gaussian(self, high, center, stdev):
@@ -49,8 +49,9 @@ class CustomCurve:
 
         center is based on numerical X
         """
+        if callable(high):
+            high = high()
         assert stdev > 0
-        print(stdev)
         self.Y += high * np.exp(-0.5 * (self.Xnum-center)**2 / stdev**2)
 
     def iterpoints(self):
@@ -64,6 +65,7 @@ class CustomCurve:
 
 
 class CustomTimedCurve(CustomCurve):
+
     def __init__(self, X):
         """Initiate timed curve (X are datetimes, Y set to zeros)
 
@@ -76,13 +78,15 @@ class CustomTimedCurve(CustomCurve):
 
     @property
     def X(self):
-        """timed X vector (datetimes)"""
+        """timeline vector (datetimes)"""
         return self._T
 
     @property
     def step(self):
         """Step between to steps"""
         return self._step
+
+
 
     def add_gaussian(self, high, center, stdev):
         """Add gaussian to Y
@@ -97,19 +101,7 @@ class CustomTimedCurve(CustomCurve):
                 timedelta   > standard deviation on timed X
                 float|int   > standard deviation on numerical X
         """
-        if isinstance(center, datetime):
-            index = bisect.bisect_left(self.X, center)
-            if self.X[index] != center:
-                raise NotImplementedError("center not in time line")
-            indexes = [index]
-        elif isinstance(center, (DatetimeDescription, dict)):
-            if isinstance(center, dict):
-                center = DatetimeDescription(**center)
-            indexes = center.match_indexes(self.X)
-        elif isinstance(center, (float, int)):
-            indexes = [center]
-        else:
-            raise TypeError(f"Unknown type center {type(center)}")
+        indexes = dtloc2pos(center, self.X)
 
         if isinstance(stdev, timedelta):
             stdev = stdev.total_seconds() / self.step.total_seconds()
