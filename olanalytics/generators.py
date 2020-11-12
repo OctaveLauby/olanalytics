@@ -100,10 +100,10 @@ class CustomTimedCurve(CustomCurve):
 
         Args:
             high (float)    : high of peak
-            center (datetime|dict|float|int): center of gaussian
+            center (location): center of gaussian
                 datetime    > datetime to center gaussian on
-                dict        > description of datetimes to center on
                 float|int   > numerical x to center on
+                dict|DateDescription > description of datetimes to center on
             stdev (timedelta|int|float): standard deviation of gaussian
                 timedelta   > standard deviation on timed X
                 float|int   > standard deviation on numerical X
