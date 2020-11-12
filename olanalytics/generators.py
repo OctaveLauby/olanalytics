@@ -37,11 +37,11 @@ class CustomCurve:
 
     def add_noise(self, low, high, loc=None):
         """Add uniform noise to Y"""
-        Y = self.Y[loc] if loc else self.Y
-        Y += np.random.uniform(
+        loc = slice(0, len(self.Y)) if loc is None else loc
+        self.Y[loc] += np.random.uniform(
             low=low,
             high=high,
-            size=len(Y),
+            size=len(self.Y[loc]),
         )
 
     def add_gaussian(self, high, center, stdev):
@@ -53,6 +53,10 @@ class CustomCurve:
             high = high()
         assert stdev > 0
         self.Y += high * np.exp(-0.5 * (self.Xnum-center)**2 / stdev**2)
+
+    def set_zero(self, loc=None):
+        """Set value to zero"""
+        self.Y[loc] -= self.Y[loc]
 
     def iterpoints(self):
         return zip(self.X, self.Y)
@@ -86,7 +90,10 @@ class CustomTimedCurve(CustomCurve):
         """Step between to steps"""
         return self._step
 
-
+    def add_noise(self, low, high, loc=None):
+        """Add uniform noise to Y"""
+        loc = dtloc2pos(loc, self.X)
+        return super().add_noise(low, high, loc=loc)
 
     def add_gaussian(self, high, center, stdev):
         """Add gaussian to Y
@@ -114,3 +121,7 @@ class CustomTimedCurve(CustomCurve):
                 center=index,
                 stdev=stdev,
             )
+    def set_zero(self, loc=None):
+        """Set value to zero"""
+        loc = dtloc2pos(loc, self.X)
+        return super().set_zero(loc=loc)
