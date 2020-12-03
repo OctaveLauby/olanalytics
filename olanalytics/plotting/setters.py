@@ -8,4 +8,10 @@ def set_size(width=17, height=4):
 
 def set_style(style='seaborn-deep'):
     """"Set plot style"""
-    plt.style.use(style)
+    try:
+        plt.style.use(style)
+    except OSError:
+        raise ValueError(
+            f"Style {style} not available"
+            f": Check plt.style.available for list of available styles"
+        )
