@@ -90,24 +90,30 @@ class DatetimeDescription:
 
 
 def dtloc2pos(__object, timeline):
-    """Convert a datetime location to an array of indexes within timeline"""
-    if __object is None:
-        return None
-    elif isinstance(__object, slice):
-        return slice
+    """Convert a datetime location to an array of indexes within timeline
+
+    In case object is slice, return slice at it is
+    """
+
+    if isinstance(__object, slice):
+        return __object
     if isinstance(__object, datetime):
         index = bisect.bisect_left(timeline, __object)
         if timeline[index] != __object:
-            raise NotImplementedError("__object not in timeline")
-        res = [index]
+            res = []
+        else:
+            res = [index]
     elif isinstance(__object, (DatetimeDescription, dict)):
         if isinstance(__object, dict):
             __object = DatetimeDescription(**__object)
         res = __object.match_indexes(timeline)
-    elif isinstance(__object, (float, int)):
+    elif isinstance(__object, int):
         res = [__object]
     elif isinstance(__object, Iterable):
-        res = sum((dtloc2pos(item) for item in __object), start=[])
+        res = []
+        for item in __object:
+            res = np.union1d(res, dtloc2pos(item, timeline))
     else:
         raise TypeError(f"Unknown type {type(__object)}")
+
     return np.array(res)
