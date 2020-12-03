@@ -1,7 +1,17 @@
+from .dt import (
+    DatetimeDescription,
+    dtloc2pos,
+)
+from .generators import (
+    CustomCurve,
+    CustomTimedCurve,
+    timeseries,
+)
 from .search import (
     closest,
     previous,
 )
+from .tracking import trackedfunc
 
 try:
     import matplotlib

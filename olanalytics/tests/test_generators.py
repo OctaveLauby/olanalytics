@@ -47,4 +47,3 @@ def test_dt_generation():
             0.9338501433185797,
         ]
     )
-
